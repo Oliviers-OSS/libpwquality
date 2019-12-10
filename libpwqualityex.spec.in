@@ -1,0 +1,181 @@
+%if 0%{?fedora} || 0%{?rhel} > 7
+# Enable python3 build by default
+%bcond_without python3
+%else
+%bcond_with python3
+%endif
+
+%if 0%{?rhel} > 7 || 0%{?fedora} > 30
+# Disable python2 build by default
+%bcond_with python2
+%else
+%bcond_without python2
+%endif
+
+Summary: A library for password generation and password quality checking
+Name: libpwqualityex
+Version: @PACKAGE_VERSION@
+Release: 1%{?dist}
+# The package is GPLv2+ licensed  
+License: GPLv2+
+Source0: https://github.com/Oliviers-OSS/libpwqualityex/releases/download/libpwquality-%{version}/libpwquality-%{version}.tar.bz2
+
+%global _pwqlibdir %{_libdir}
+%global _moduledir %{_libdir}/security
+%global _secconfdir %{_sysconfdir}/security
+
+Recommends: cracklib-dicts >= 2.8
+Requires: pam%{?_isa}
+BuildRequires: gcc
+BuildRequires: cracklib-devel
+BuildRequires: gettext
+BuildRequires: pam-devel
+%if %{with python2}
+BuildRequires: python2-devel
+%endif
+%if %{with python3}
+BuildRequires: python3-devel
+%endif
+
+URL: https://github.com/Oliviers-OSS/libpwqualityex/
+
+# we don't want to provide private python extension libs
+%define __provides_exclude_from ^(%{python_sitearch}|%{python3_sitearch})/.*\.so$.
+
+%description
+This is a library for password quality checks and generation
+of random passwords that pass the checks.
+This library uses the cracklib and cracklib dictionaries
+to perform some of the checks.
+
+%package devel
+Summary: Support for development of applications using the libpwqualityex library
+Requires: libpwqualityex%{?_isa} = %{version}-%{release}
+Requires: pkgconfig
+
+%description devel
+Files needed for development of applications using the libpwqualityex
+library.
+See the pwquality.h header file for the API.
+
+%if %{with python2}
+%package -n python2-pwqualityex
+%{?python_provide:%python_provide python2-pwqualityex}
+Summary: Python bindings for the libpwqualityex library
+Requires: libpwqualityex%{?_isa} = %{version}-%{release}
+
+%description -n python2-pwqualityex
+This is pwqualityex Python module that provides Python bindings
+for the libpwqualityex library. These bindings can be used
+for easy password quality checking and generation of random
+pronounceable passwords from Python applications.
+%endif
+
+%if %{with python3}
+%package -n python3-pwquality
+Summary: Python bindings for the libpwquality library
+Requires: libpwquality%{?_isa} = %{version}-%{release}
+
+%description -n python3-pwquality
+This is pwquality Python module that provides Python bindings
+for the libpwquality library. These bindings can be used
+for easy password quality checking and generation of random
+pronounceable passwords from Python applications.
+%endif
+
+%prep
+%setup -q
+
+%if %{with python3} && %{with python2}
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+%endif
+
+%build
+%if %{with python2}
+%configure \
+	--with-securedir=%{_moduledir} \
+	--with-pythonsitedir=%{python2_sitearch} \
+	--with-python-binary=%{__python2} \
+	--disable-static
+
+make %{?_smp_mflags}
+%endif
+%if %{with python3} && %{with python2}
+pushd %{py3dir}
+%endif
+%if %{with python3}
+%configure \
+	--with-securedir=%{_moduledir} \
+	--with-pythonsitedir=%{python3_sitearch} \
+	--with-python-binary=%{__python3} \
+	--disable-static
+
+make %{?_smp_mflags}
+%endif
+%if %{with python3} && %{with python2}
+popd
+%endif
+
+%install
+make install DESTDIR=$RPM_BUILD_ROOT INSTALL='install -p'
+
+%if %{with python3} && %{with python2}
+pushd %{py3dir}
+make -C python install DESTDIR=$RPM_BUILD_ROOT INSTALL='install -p'
+popd
+%endif
+
+%if "%{_pwqlibdir}" != "%{_libdir}"
+pushd $RPM_BUILD_ROOT%{_libdir}
+mv libpwquality.so.* $RPM_BUILD_ROOT%{_pwqlibdir}
+ln -sf %{_pwqlibdir}/libpwquality.so.*.* libpwquality.so
+popd
+%endif
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
+rm -f $RPM_BUILD_ROOT%{_moduledir}/*.la
+
+mkdir $RPM_BUILD_ROOT%{_secconfdir}/pwquality.conf.d
+
+%find_lang libpwquality
+
+%check
+# Nothing yet
+
+%ldconfig_scriptlets
+
+%files -f libpwquality.lang
+%{!?_licensedir:%global license %%doc}
+%license COPYING
+%doc README NEWS AUTHORS
+%{_bindir}/pwmake
+%{_bindir}/pwscore
+%{_moduledir}/pam_pwquality.so
+%{_pwqlibdir}/libpwquality.so.*
+%config(noreplace) %{_secconfdir}/pwquality.conf
+%{_secconfdir}/pwquality.conf.d
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
+
+%files devel
+%{_includedir}/pwquality.h
+%{_libdir}/libpwquality.so
+%{_libdir}/pkgconfig/*.pc
+%{_mandir}/man3/*
+
+%if %{with python2}
+%files -n python2-pwqualityex
+%{python2_sitearch}/pwquality.so
+%{python2_sitearch}/*.egg-info
+%endif
+
+%if %{with python3}
+%files -n python3-pwqualityex
+%{python3_sitearch}/*.so
+%{python3_sitearch}/*.egg-info
+%endif
+
+%changelog
+* Tue Dec 10 2019 Olivier Charloton
+  First release based on libpwquality 1.4.2

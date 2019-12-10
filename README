@@ -1,4 +1,4 @@
-This is a libpwquality library for password quality checking
+This is a libpwqualityex library for password quality checking
 and generation of random passwords that pass the checks.
 
 NOTES:
@@ -16,9 +16,9 @@ There are simple tools that use the libpwquality:
               Required argument is number of bits of entropy used to
               generate the password.
 
-The pwquality Python wrapper module can be used to call the libpwquality
+The pwqualityex Python wrapper module can be used to call the libpwqualityex
 functionality from Python.
 
-And finally there is pam_pwquality Linux PAM module that can be used
+And finally there is pam_pwqualityex Linux PAM module that can be used
 instead of pam_cracklib to disallow weak new passwords when user's login
 password is changed.

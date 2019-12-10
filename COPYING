@@ -1,7 +1,10 @@
 Unless otherwise *explicitly* stated the following text describes the
-licensed conditions under which the contents of this libpwquality release
+licensed conditions under which the contents of this libpwqualityex release
 may be distributed:
 
+libpwqualityex source code is based on the libpwquality (see below for its licence)
+but is distributed under the terms of the GNU General Public License version 2 
+or later ONLY
 -------------------------------------------------------------------------
 Redistribution and use in source and binary forms of libpwquality, with
 or without modification, are permitted provided that the following

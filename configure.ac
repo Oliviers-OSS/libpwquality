@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([libpwquality], [1.4.2])
+AC_INIT([libpwqualityexex], [1.0.0])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip -Wall])
 AC_PREREQ(2.61)
@@ -14,15 +14,15 @@ dnl LT Version numbers, remember to change them *before* a release.
 dnl   (Interfaces removed:    CURRENT++, AGE=0, REVISION=0)
 dnl   (Interfaces added:      CURRENT++, AGE++, REVISION=0)
 dnl   (No interfaces changed:                   REVISION++)
-PWQUALITY_LT_CURRENT=1
-PWQUALITY_LT_AGE=0
-PWQUALITY_LT_REVISION=2
+pwqualityex_LT_CURRENT=1
+pwqualityex_LT_AGE=0
+pwqualityex_LT_REVISION=2
 
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
-AC_SUBST(PWQUALITY_LT_CURRENT)
-AC_SUBST(PWQUALITY_LT_AGE)
-AC_SUBST(PWQUALITY_LT_REVISION)
+AC_SUBST(pwqualityex_LT_CURRENT)
+AC_SUBST(pwqualityex_LT_AGE)
+AC_SUBST(pwqualityex_LT_REVISION)
 
 dnl Checks for programs.
 AC_USE_SYSTEM_EXTENSIONS
@@ -95,7 +95,7 @@ if test "$enable_pam" != "no"; then
       fail=0
       AC_CHECK_LIB([pam], [pam_start], [], [fail=1])
       test $fail = 1 &&
-        AC_MSG_ERROR([You must install the PAM development package in order to compile libpwquality])
+        AC_MSG_ERROR([You must install the PAM development package in order to compile libpwqualityex])
   fi
 fi
 
@@ -164,6 +164,6 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 
 dnl Files to be created from when we run configure
-AC_CONFIG_FILES([Makefile libpwquality.spec src/Makefile src/pwquality.pc po/Makefile.in python/Makefile
+AC_CONFIG_FILES([Makefile libpwqualityex.spec src/Makefile src/pwqualityex.pc po/Makefile.in python/Makefile
                  doc/Makefile doc/man/Makefile python/setup.py])
 AC_OUTPUT
