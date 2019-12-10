@@ -1,7 +1,7 @@
 # Project libpwquality extended 
 
 This project is based on the original libpwquality project (Library for password quality checking and generating random passwords) and include a few extensions:
-- Differents user profiles management.
+- Differents user profiles management (administrators must have a stronger password than simple users for example).
 - Check passwords against trivial substitutions.
 - Check passwords against Leet speaks patterns.
 
