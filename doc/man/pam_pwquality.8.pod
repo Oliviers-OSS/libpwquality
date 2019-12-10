@@ -75,6 +75,10 @@ Check whether the password contains the user's name in some form.
 The I<Cracklib> routine is called to check if the password is part of
 a dictionary.
 
+=item Trivial characters substitutions check
+
+Optional check if the password contains some trivial characters substitutions.
+
 =back
 
 These checks are configurable either by use of the module arguments

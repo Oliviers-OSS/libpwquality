@@ -169,6 +169,11 @@ in the F</etc/passwd> file. The module still asks for the password so
 the following modules in the stack can use the B<use_authtok> option.
 This option is off by default.
 
+=item B<trivialsubst>
+
+If nonzero, perform the trivial character substitutions, defined in parameters, 
+like for example: l1|! means 'l' substituted by '1', '|' or '!'.
+
 =back
 
 =head1 SEE ALSO

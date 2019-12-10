@@ -99,6 +99,7 @@ pwquality_free_settings(pwquality_settings_profiles *profiles)
                 }
                 FREE2(bad_words);
                 FREE2(dict_path);        
+                FREE2(trivial_subst);
                 list_del(i);
                 free(node);
                 node = NULL;
@@ -125,6 +126,7 @@ static const struct setting_mapping s_map[] = {
  { "enforcing", PWQ_SETTING_ENFORCING, PWQ_TYPE_INT},
  { "badwords", PWQ_SETTING_BAD_WORDS, PWQ_TYPE_STR},
  { "dictpath", PWQ_SETTING_DICT_PATH, PWQ_TYPE_STR},
+ { "trivialsubst", PWQ_SETTING_TRIVIAL_SUBST, PWQ_TYPE_STR},
  { "retry", PWQ_SETTING_RETRY_TIMES, PWQ_TYPE_INT},
  { "enforce_for_root", PWQ_SETTING_ENFORCE_ROOT, PWQ_TYPE_SET},
  { "local_users_only", PWQ_SETTING_LOCAL_USERS, PWQ_TYPE_SET}
@@ -521,6 +523,10 @@ pwquality_set_str_value_internal(pwquality_settings *pwq, int setting,
                 free(pwq->dict_path);
                 pwq->dict_path = dup;
                 break;
+        case PWQ_SETTING_TRIVIAL_SUBST:
+                free(pwq->trivial_subst);
+                pwq->trivial_subst = dup;
+                break;
         default:
                 free(dup);
                 return PWQ_ERROR_NON_STR_SETTING;
@@ -618,6 +624,9 @@ pwquality_get_str_value(pwquality_settings_t *profiles, int setting, const char 
                         *value = pwq->dict_path;
                 else
                         *value = GetDefaultCracklibDict();
+                break;
+        case PWQ_SETTING_TRIVIAL_SUBST:
+                *value = pwq->trivial_subst;
                 break;
         default:
                 return PWQ_ERROR_NON_STR_SETTING;

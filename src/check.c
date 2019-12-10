@@ -493,6 +493,35 @@ gecoscheck(pwquality_settings *pwq, const char *new,
         return rv;
 }
 
+static inline void
+create_subst_table(const char *trivial_subst_parameters,char *table)
+{
+    char b = 0x0;
+    register char *t = table;
+    for(register int i = 0; i < 0x100; *t = i, ++t, ++i);
+    for(register const char *p = trivial_subst_parameters; *p ; ++p) {
+        const char c = *p;
+        if (!b) {
+            b = c;
+        }
+
+        if (c != ' ') {
+            table[c] = b;
+        } else {
+            b = 0x0;
+        }
+    }
+}
+
+static inline void
+str_convert(const char *table,const char *word, char *converted)
+{
+    register const char *s = word;
+    register char *d = converted;
+    for(; *s; *d=table[*s],++d,++s);
+    *d = '\0';
+}
+
 static char *
 x_strdup(const char *string)
 {
@@ -890,6 +919,24 @@ pwquality_check(pwquality_settings_t *profiles, const char *password,
                         }
                 }
 
+                if (pwq->trivial_subst) {
+                        char table[0xFF];
+                        create_subst_table(pwq->trivial_subst,table);
+                        const size_t n = strlen(password);
+                        char converted[n];
+                        if (pwq->dict_check) {
+                                str_convert(table,password,converted);
+                                if (strcmp(converted,password) != 0) {
+                                        msg = FascistCheck(password, pwq->dict_path);
+                                        if (msg) {
+                                                if (auxerror)
+                                                        *auxerror = (void *)msg;
+                                                return PWQ_ERROR_TRIVIAL_SUBSTITUTION;
+                                        }
+                                }
+                        }
+                }
+        
                 score = password_score(pwq, password);
         } else {
                 return PWQ_ERROR_FATAL_FAILURE;

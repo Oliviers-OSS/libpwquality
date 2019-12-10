@@ -34,6 +34,7 @@ typedef struct pwquality_settings_ {
         int local_users_only;
         char *bad_words;
         char *dict_path;
+        char *trivial_subst;
 } pwquality_settings;
 
 #ifndef TO_STRING
