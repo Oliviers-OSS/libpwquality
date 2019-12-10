@@ -174,6 +174,12 @@ This option is off by default.
 If nonzero, perform the trivial character substitutions, defined in parameters, 
 like for example: l1|! means 'l' substituted by '1', '|' or '!'.
 
+=item B<leetspeakcheck>
+
+If nonzero, check whether the password contains some 1337/leet speaks pattern.
+If yes, performs substitutions in the password string before checking it against 
+the cracklib dictionaries and password quality.
+
 =back
 
 =head1 SEE ALSO

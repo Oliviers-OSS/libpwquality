@@ -51,6 +51,7 @@ static inline pwquality_settings_profile_node* new_pwquality_settings_profile_no
                                 new_profile->pwq.retry_times = PWQ_DEFAULT_RETRY_TIMES;
                                 new_profile->pwq.enforce_for_root = PWQ_DEFAULT_ENFORCE_ROOT;
                                 new_profile->pwq.local_users_only = PWQ_DEFAULT_LOCAL_USERS;
+                                new_profile->pwq.leet_speak_dict_check = PWQ_DEFAULT_LEETSPEAK_DICT_CHECK;
                                 list_add_tail(&new_profile->list,profiles);
                         } else {
                                 printf("Failed to allocate %zu bytes of memory for a new profile name\n",strlen(name));
@@ -127,6 +128,7 @@ static const struct setting_mapping s_map[] = {
  { "badwords", PWQ_SETTING_BAD_WORDS, PWQ_TYPE_STR},
  { "dictpath", PWQ_SETTING_DICT_PATH, PWQ_TYPE_STR},
  { "trivialsubst", PWQ_SETTING_TRIVIAL_SUBST, PWQ_TYPE_STR},
+ { "leetspeakcheck",PWQ_SETTING_LEET_SPEAK_DICT_CHECK, PWQ_TYPE_INT},
  { "retry", PWQ_SETTING_RETRY_TIMES, PWQ_TYPE_INT},
  { "enforce_for_root", PWQ_SETTING_ENFORCE_ROOT, PWQ_TYPE_SET},
  { "local_users_only", PWQ_SETTING_LOCAL_USERS, PWQ_TYPE_SET}
@@ -484,6 +486,9 @@ pwquality_set_int_value_internal(pwquality_settings *pwq, int setting, int value
         case PWQ_SETTING_LOCAL_USERS:
                 pwq->local_users_only = value;
                 break;
+        case PWQ_SETTING_LEET_SPEAK_DICT_CHECK:
+                pwq->leet_speak_dict_check = value;
+                break;
         default:
                 return PWQ_ERROR_NON_INT_SETTING;
         }
@@ -592,6 +597,9 @@ pwquality_get_int_value(pwquality_settings_t *profiles, int setting, int *value)
                 break;
         case PWQ_SETTING_ENFORCING:
                 *value = pwq->enforcing;
+                break;
+        case PWQ_SETTING_LEET_SPEAK_DICT_CHECK:
+                *value = pwq->leet_speak_dict_check;
                 break;
         case PWQ_SETTING_RETRY_TIMES:
                 *value = pwq->retry_times;

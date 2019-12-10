@@ -79,6 +79,10 @@ a dictionary.
 
 Optional check if the password contains some trivial characters substitutions.
 
+=item Use of Leetspeak patterns check
+
+Optional check if the password contains some I<Leet speak patterns>. 
+
 =back
 
 These checks are configurable either by use of the module arguments
@@ -250,6 +254,21 @@ This option is off by default.
 This argument is used to I<force> the module to not prompt the user for
 a new password but use the one provided by the previously stacked
 B<password> module.
+
+=item B<trivialsubst>
+
+The set of characters defined from this space separated list are 
+individually used to perform B<trivial characters substitutions> before
+submitting the result to the cracklib dictionaries.
+The first character of each set is the result of the substitution by the following.
+For example: l!|1 means characters '!','|' and '1' will be replaced by the character 'l'.
+By default the list is empty which means that this check is disabled.
+
+=item B<leetspeakcheck>
+
+If nonzero, try to look for 1337 / leet speak patterns in the password, then replace them 
+by the corresponding character before submitting the result to the cracklib dictionaries
+and the password quality check runtime.   
 
 =back
 

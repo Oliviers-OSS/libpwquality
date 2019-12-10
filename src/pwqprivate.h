@@ -35,6 +35,7 @@ typedef struct pwquality_settings_ {
         char *bad_words;
         char *dict_path;
         char *trivial_subst;
+        int leet_speak_dict_check;
 } pwquality_settings;
 
 #ifndef TO_STRING
@@ -88,6 +89,7 @@ struct setting_mapping {
 #define PWQ_DEFAULT_LOW_CREDIT   0
 #define PWQ_DEFAULT_OTH_CREDIT   0
 #define PWQ_DEFAULT_DICT_CHECK   1
+#define PWQ_DEFAULT_LEETSPEAK_DICT_CHECK   0
 #define PWQ_DEFAULT_USER_CHECK   1
 #define PWQ_DEFAULT_ENFORCING    1
 #define PWQ_DEFAULT_RETRY_TIMES  1

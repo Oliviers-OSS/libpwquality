@@ -674,6 +674,81 @@ password_score(pwquality_settings *pwq, const char *password)
         return score;
 }
 
+/* Try to convert the password using a leet speak table then ask to the cracklib dictionary to check if the resulting string is found*/
+static int leet_speak_dictionary_check(pwquality_settings *pwq,const char *password,const char *oldpassword, const char *user, void **auxerror)
+{
+    /*
+     * First version: use the first matching pattern in alphabetical order
+     * Table to be completed, some patterns are probably missing
+     */
+        static const char *table[] = {
+        /*A*/"4\0" "/\\\0" "@\0" "∂\0" "/-\\\0" "|-\\\0" "^" "ci" "\0",
+        /*B*/"8\0" "13\0" "|3\0" "ß\0" "\0",
+        /*C*/"(\0" "¢\0" "<\0" "[\0" "©\0" "\0",
+        /*D*/"[)\0"	"|>\0"  "|)\0" "|]" "\0",
+        /*E*/"3\0" "€\0" "є" "[-" "\0",
+        /*F*/"|=\0"	"/=" "\0",
+        /*G*/"6\0" "(_+\0" "\0",
+        /*H*/"#\0" "/-/\0" "[-]\0" "]-[\0" ")-(\0" "(-)\0" ":-:\0" "|~|\0" "|-|\0" "]~[\0" "}{\0" "\0",
+        /*I*/"1\0" "!\0" "|\0"	"][\0" "]\0" ":\0" "\0",
+        /*J*/"_|\0" "_/\0" "¿\0" "\0",
+        /*K*/"|X\0" "|<\0"	"|{\0" "ɮ\0" "\0",
+        /*L*/"1\0" "£\0" "1_\0" "ℓ\0" "|_\0" "[_\0" "\0",
+        /*M*/"|V|\0" "|\\/|\0" "/\\/\\\0"	"/V\\\0" "\0",
+        /*N*/"|V\0" "|\\|\0" "/\\/\0" "[\\]\0" "/V\0" "\0",
+        /*O*/"[]\0" "0\0" "()\0" "°\0" "\0",
+        /*P*/"|*\0"	"|o\0" "|º\0"  "|°\0" "/*\0" "\0",
+        /*Q*/"¶\0"	"(_,)\0"  "()_\0" "0_\0" "°|\0" "<|\0" "0.\0" "\0",
+        /*R*/"2\0" "|?\0" "/2\0" "®\0" "Я\0" "|2\0" "\0",
+        /*S*/"5\0" "$\0" "§\0" "_/¯\0" "\0",
+        /*T*/"7\0" "†\0" "¯|¯\0" "\0",
+        /*U*/"(_)\0" "|_|\0" "L|\0" "µ\0" "\0",
+        /*V*/"\\/\0" "|/\0" "\0",
+        /*W*/"\\/\\/\0"	"vv\0" "'//\0" "\\^/\0" "\\V/\0" "\\|/\0" "\\_|_/\0" "\\_:_/\0" "\0",
+        /*X*/"><\0"	"}{\0"  "×\0" ")(\0" "\0",
+        /*Y*/"`/\0"	"φ\0" "¥\0" "'/\0" "\0",
+        /*Z*/"≥\0" "7_\0" ">_\0" "\0"
+        };
+        int score = 0;
+        const size_t n = strlen(password);
+        char converted[n+1];
+        register const char *r = password;
+        register char *w = converted;
+        const char * const end = password + n;
+        memset(converted,0,sizeof(converted));
+        const char ** const table_end = table + sizeof(table)/sizeof(table[0]);
+        for(; r < end; w++,r++) {
+                *w = tolower(*r);
+                for(const char **pos = table; pos < table_end; pos++) {
+                        for(const char *pattern = *pos; *pattern != '\0'; pattern+= (strlen(pattern)+1)) {
+                                const size_t pattern_size = strlen(pattern);
+                                if (strncmp(pattern,r,pattern_size) == 0) {
+                                        *w = 'a' + (pos - table);
+                                        r += (pattern_size - 1);
+                                        break;
+                                }
+                        } /* for(const char *pattern = *pos;*pattern != '\0'; pattern+= (strlen(pattern)+1)) */
+                        if ((*w) != (*r)) {
+                                break;
+                        }
+                } /* for(const char **pos = table;pos < table_end;pos++) */
+        } /* for(;r < end;w++,r++) */
+
+        const char *msg = FascistCheck(converted, pwq->dict_path);
+        if (msg) {
+                if (auxerror) {
+                        *auxerror = (void *)msg;
+                }
+                score = PWQ_ERROR_LEET_SPEAK_DICT;
+        } else {
+               if (password_check(pwq, converted, oldpassword, user, auxerror) != 0) {
+                       score = PWQ_ERROR_LEET_SPEAK_DICT;
+                }
+        }
+
+        return score;
+}
+
 /*
  * Look for the right profile for this user
  */
@@ -937,6 +1012,13 @@ pwquality_check(pwquality_settings_t *profiles, const char *password,
                         }
                 }
         
+                if (pwq->leet_speak_dict_check) {
+                        score = leet_speak_dictionary_check(pwq,password, oldpassword, user,auxerror);
+                        if (score != 0) {
+                                return score;
+                        }
+                }
+
                 score = password_score(pwq, password);
         } else {
                 return PWQ_ERROR_FATAL_FAILURE;
