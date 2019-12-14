@@ -7,5 +7,5 @@ Name: pwquality
 Description: Password quality checker
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lpwquality
-Libs.private: -lcrack
+Libs.private: -lcrack -lpcre
 Cflags: -I${includedir}

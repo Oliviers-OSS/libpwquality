@@ -21,36 +21,36 @@ def genconstants(headerfile, outputfile):
 
 class build_ext(_build_ext):
     def run(self):
-        if not os.path.exists('constants.c'):
-            genconstants('../src/pwquality.h', 'constants.c')
+        if not os.path.exists('@builddir@/constants.c'):
+            genconstants('@top_srcdir@/src/pwquality.h', '@builddir@/constants.c')
         _build_ext.run(self)
 
 class sdist(_sdist):
     def run(self):
-        if not os.path.exists('constants.c'):
-            genconstants('../src/pwquality.h', 'constants.c')
+        if not os.path.exists('@builddir@/constants.c'):
+            genconstants('@top_srcdir@/src/pwquality.h', '@builddir@/constants.c')
         _sdist.run(self)
 
-pwqmodule = Extension('pwquality',
-            sources = ['pwquality.c'],
-            include_dirs = ['../src'],
-            library_dirs = ['../src/.libs'],
+pwqmodule = Extension('pwqualityex',
+            sources = ['@srcdir@/pwquality.c'],
+            include_dirs = ['@top_srcdir@/src'],
+            library_dirs = ['@top_srcdir@/src/.libs'],
             libraries = ['pwquality'])
 
 setup(
-    name = 'pwquality',
+    name = 'pwqualityex',
     version = '@VERSION@',
-    description = 'Python bindings for the libpwquality library for password quality checking',
-    author = 'Tomáš Mráz',
-    author_email = 'tm@t8m.info',
-    url = 'http://fedorahosted.org/libpwquality',
-    license = 'BSD or GPLv2+',
+    description = 'Python bindings for the libpwqualityex library for password quality checking',
+    author = 'Olivier Charloton',
+    author_email = 'oliviers.open.source.softwares@gmail.com',   
+    license = 'GPLv2+',
     ext_modules = [pwqmodule],
     cmdclass = {'build_ext': build_ext, 'sdist': sdist}
 )
 
 # Copyright (c) Red Hat, Inc, 2011
 # Copyright (c) Tomas Mraz <tm@t8m.info>, 2011
+# Copyright (c) Olivier Charloton <oliviers.open.source.softwares@gmail.com>, 2019
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
